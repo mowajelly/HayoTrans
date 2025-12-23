@@ -1,0 +1,147 @@
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  z-index: 9999;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.splash-logo {
+  width: 100px;
+  height: 100px;
+  color: #4a9eff;
+  margin-bottom: 24px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.splash-logo svg {
+  width: 100%;
+  height: 100%;
+}
+
+.splash-title {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 2px;
+}
+
+.splash-subtitle {
+  margin: 8px 0 32px 0;
+  font-size: 14px;
+  color: #8a8a9a;
+}
+
+.task-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.task-item.loading {
+  background: rgba(74, 158, 255, 0.1);
+}
+
+.task-item.done {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.task-item.error {
+  background: rgba(244, 67, 54, 0.1);
+}
+
+.task-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.task-icon.pending {
+  color: #666666;
+}
+
+.task-icon.loading {
+  color: #4a9eff;
+}
+
+.task-icon.done {
+  color: #4caf50;
+}
+
+.task-icon.error {
+  color: #f44336;
+}
+
+.spinner-small {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(74, 158, 255, 0.3);
+  border-top-color: #4a9eff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.task-label {
+  flex: 1;
+  font-size: 13px;
+  color: #cccccc;
+}
+
+.task-item.done .task-label {
+  color: #888888;
+}
+
+.task-error {
+  font-size: 11px;
+  color: #f44336;
+}
+
+.current-task {
+  margin-top: 24px;
+  font-size: 12px;
+  color: #666666;
+  text-align: center;
+}

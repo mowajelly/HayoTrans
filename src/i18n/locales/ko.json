@@ -1,0 +1,51 @@
+{
+  "app": {
+    "title": "하요트랜스",
+    "subtitle": "게임 번역 도구"
+  },
+  "projectList": {
+    "title": "프로젝트",
+    "noProjects": "프로젝트가 없습니다",
+    "addProject": "프로젝트 추가",
+    "selectFolder": "게임 폴더 선택",
+    "deleteProject": "프로젝트 삭제",
+    "openProject": "열기",
+    "lastOpened": "마지막 열람",
+    "translationProgress": "번역 진행률",
+    "engine": "엔진",
+    "confirmDelete": "이 프로젝트를 삭제하시겠습니까?",
+    "confirmDeleteNote": "프로젝트 목록에서만 삭제되며 게임 파일은 삭제되지 않습니다."
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류",
+    "cancel": "취소",
+    "confirm": "확인",
+    "save": "저장",
+    "close": "닫기",
+    "settings": "설정"
+  },
+  "settings": {
+    "title": "설정",
+    "language": "언어",
+    "theme": "테마",
+    "themeLight": "라이트",
+    "themeDark": "다크",
+    "themeSystem": "시스템",
+    "openDataFolder": "데이터 폴더 열기"
+  },
+  "engine": {
+    "rpgMakerMV": "RPG Maker MV",
+    "rpgMakerMZ": "RPG Maker MZ",
+    "rpgMakerVXAce": "RPG Maker VX Ace",
+    "rpgMakerVX": "RPG Maker VX",
+    "rpgMakerXP": "RPG Maker XP",
+    "wolfRPG": "Wolf RPG Editor",
+    "tyrano": "TyranoBuilder",
+    "kirikiri": "키리키리",
+    "renpy": "렌파이",
+    "nwjs": "NW.js",
+    "electron": "Electron",
+    "unknown": "알 수 없음"
+  }
+}

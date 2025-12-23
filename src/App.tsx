@@ -1,50 +1,112 @@
-import { createSignal } from "solid-js";
-import logo from "./assets/logo.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+import { Router, Route } from '@solidjs/router';
+import { createSignal, createEffect, Show, onMount } from 'solid-js';
+import { I18nProvider, useI18n, isValidLocale, Locale } from './i18n';
+import { getConfig, setLanguage as setBackendLanguage } from './api/config';
+import SplashScreen, { LoadingTask } from './components/SplashScreen';
+import ProjectListPage from './pages/ProjectListPage';
+import './styles/global.css';
 
-function App() {
-  const [greetMsg, setGreetMsg] = createSignal("");
-  const [name, setName] = createSignal("");
+// Placeholder for project detail page (to be implemented later)
+function ProjectPage() {
+  return (
+    <div style={{ padding: '24px' }}>
+      <h1>Project Page</h1>
+      <p>This page will be implemented later.</p>
+      <a href="/">← Back to Projects</a>
+    </div>
+  );
+}
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name: name() }));
-  }
+// App content that needs i18n context
+function AppContent() {
+  const { setLocale, setInitialized, isInitialized } = useI18n();
+  const [tasks, setTasks] = createSignal<LoadingTask[]>([
+    { id: 'config', label: 'Loading configuration...', status: 'pending' },
+    { id: 'ready', label: 'Preparing application...', status: 'pending' },
+  ]);
+  const [currentTask, setCurrentTask] = createSignal<string>('');
+
+  const updateTask = (id: string, updates: Partial<LoadingTask>) => {
+    setTasks(prev => prev.map(task => 
+      task.id === id ? { ...task, ...updates } : task
+    ));
+  };
+
+  onMount(async () => {
+    try {
+      // Task 1: Load configuration
+      updateTask('config', { status: 'loading' });
+      setCurrentTask('Connecting to backend...');
+
+      const config = await getConfig();
+      
+      // Apply locale from backend config
+      if (isValidLocale(config.language)) {
+        setLocale(config.language as Locale);
+      }
+
+      updateTask('config', { status: 'done', label: `Loaded configuration (${config.language})` });
+
+      // Task 2: Prepare application
+      updateTask('ready', { status: 'loading' });
+      setCurrentTask('Initializing...');
+
+      // Small delay for visual feedback
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      updateTask('ready', { status: 'done', label: 'Application ready' });
+      setCurrentTask('');
+
+      // Mark as initialized
+      setInitialized(true);
+    } catch (error) {
+      console.error('Initialization error:', error);
+      updateTask('config', { 
+        status: 'error', 
+        error: String(error) 
+      });
+      setCurrentTask('Error during initialization');
+
+      // Still mark as initialized to show the app (with default settings)
+      setTimeout(() => {
+        setInitialized(true);
+      }, 2000);
+    }
+  });
 
   return (
-    <main class="container">
-      <h1>Welcome to Tauri + Solid</h1>
+    <Show
+      when={isInitialized()}
+      fallback={<SplashScreen tasks={tasks()} currentTask={currentTask()} />}
+    >
+      <Router>
+        <Route path="/" component={ProjectListPage} />
+        <Route path="/project/:id" component={ProjectPage} />
+      </Router>
+    </Show>
+  );
+}
 
-      <div class="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://solidjs.com" target="_blank">
-          <img src={logo} class="logo solid" alt="Solid logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and Solid logos to learn more.</p>
+// Updated ProjectListPage to sync language changes to backend
+function ProjectListPageWithSync() {
+  const { locale } = useI18n();
 
-      <form
-        class="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg()}</p>
-    </main>
+  // Sync locale changes to backend
+  createEffect(() => {
+    const currentLocale = locale();
+    setBackendLanguage(currentLocale).catch(err => {
+      console.error('Failed to sync language to backend:', err);
+    });
+  });
+
+  return <ProjectListPage />;
+}
+
+function App() {
+  return (
+    <I18nProvider>
+      <AppContent />
+    </I18nProvider>
   );
 }
 

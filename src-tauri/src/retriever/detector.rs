@@ -91,8 +91,6 @@ impl GameDetector {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs;
-    use std::env;
 
     #[test]
     fn test_detect_nonexistent_directory() {
@@ -105,10 +103,11 @@ mod tests {
 
     #[test]
     fn test_is_supported() {
-        let temp_dir = env::temp_dir();
-        let result = GameDetector::is_supported(&temp_dir);
+        // Use a path that definitely doesn't exist
+        let path = Path::new("/nonexistent/game/directory");
+        let result = GameDetector::is_supported(path);
         
-        // temp_dir는 게임 프로젝트가 아니므로 false
+        // Nonexistent path should not be supported
         assert!(!result);
     }
 

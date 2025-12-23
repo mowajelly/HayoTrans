@@ -1,0 +1,51 @@
+{
+  "app": {
+    "title": "HayoTrans",
+    "subtitle": "Game Translation Tool"
+  },
+  "projectList": {
+    "title": "Projects",
+    "noProjects": "No projects found",
+    "addProject": "Add Project",
+    "selectFolder": "Select Game Folder",
+    "deleteProject": "Delete Project",
+    "openProject": "Open",
+    "lastOpened": "Last opened",
+    "translationProgress": "Translation Progress",
+    "engine": "Engine",
+    "confirmDelete": "Are you sure you want to delete this project?",
+    "confirmDeleteNote": "This will remove the project from the list but won't delete the game files."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close",
+    "settings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "openDataFolder": "Open Data Folder"
+  },
+  "engine": {
+    "rpgMakerMV": "RPG Maker MV",
+    "rpgMakerMZ": "RPG Maker MZ",
+    "rpgMakerVXAce": "RPG Maker VX Ace",
+    "rpgMakerVX": "RPG Maker VX",
+    "rpgMakerXP": "RPG Maker XP",
+    "wolfRPG": "Wolf RPG Editor",
+    "tyrano": "TyranoBuilder",
+    "kirikiri": "KiriKiri",
+    "renpy": "Ren'Py",
+    "nwjs": "NW.js",
+    "electron": "Electron",
+    "unknown": "Unknown"
+  }
+}
