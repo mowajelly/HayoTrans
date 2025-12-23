@@ -20,9 +20,40 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
 tauri-plugin-fs = "2"
 tauri-plugin-persisted-scope = "2"
 tauri-plugin-notification = "2"
+tauri-plugin-dialog = "2"
+
+# 직렬화
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# 에러 처리
+thiserror = "1"
+anyhow = "1"
+
+# 비동기
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+
+# HTTP 클라이언트 (번역 API)
+reqwest = { version = "0.11", features = ["json"] }
+
+# 날짜/시간
+chrono = { version = "0.4", features = ["serde"] }
+
+# 파일 압축/아카이브
+zip = "0.6"
+flate2 = "1"
+
+# 인코딩
+encoding_rs = "0.8"
+
+# 정규표현식
+regex = "1"
+
+# 로깅
+tracing = "0.1"
+tracing-subscriber = "0.3"
 
