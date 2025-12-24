@@ -69,3 +69,9 @@ uuid = { version = "1", features = ["v4", "serde"] }
 # 디렉토리 경로
 dirs = "5"
 
+# Directory walking
+walkdir = "2"
+
+[dev-dependencies]
+tempfile = "3"
+
