@@ -22,6 +22,46 @@ export type RPGMakerVersion =
   | 'XP'
   | 'Unknown';
 
+// Progress state - matches Rust backend
+export type ProgressState =
+  | 'initial'
+  | 'assets_unpacked'
+  | 'dialogues_extracted'
+  | 'metadata_translated'
+  | 'dialogues_translated'
+  | 'assets_repacked'
+  | 'finalized';
+
+// Progress state info for UI
+export interface ProgressStateInfo {
+  state: ProgressState;
+  index: number;
+  label: string;
+}
+
+// All progress states in order
+export const PROGRESS_STATES: ProgressState[] = [
+  'initial',
+  'assets_unpacked',
+  'dialogues_extracted',
+  'metadata_translated',
+  'dialogues_translated',
+  'assets_repacked',
+  'finalized',
+];
+
+// Get progress percentage (0 to 100)
+export function getProgressPercentage(state: ProgressState): number {
+  const index = PROGRESS_STATES.indexOf(state);
+  if (index === -1) return 0;
+  return Math.round((index / (PROGRESS_STATES.length - 1)) * 100);
+}
+
+// Check if a state is at or past another state
+export function isAtOrPast(current: ProgressState, target: ProgressState): boolean {
+  return PROGRESS_STATES.indexOf(current) >= PROGRESS_STATES.indexOf(target);
+}
+
 // Engine info for display
 export interface EngineInfo {
   engineType: GameEngineType;
@@ -39,7 +79,8 @@ export interface ProjectInfo {
   lastOpenedAt: string; // ISO 8601
   totalLines: number;
   translatedLines: number;
-  thumbnailPath?: string;
+  thumbnailBase64?: string;
+  progressState: ProgressState;
 }
 
 // Project list item for display
@@ -49,13 +90,14 @@ export interface ProjectListItem {
   path: string;
   engineDisplayName: string;
   lastOpened: string;
-  progress: number; // 0-100
-  thumbnailPath?: string;
+  translationProgress: number; // 0-100 (lines translated)
+  progressState: ProgressState;
+  thumbnailBase64?: string;
 }
 
 // Convert ProjectInfo to ProjectListItem
 export function toProjectListItem(project: ProjectInfo): ProjectListItem {
-  const progress = project.totalLines > 0
+  const translationProgress = project.totalLines > 0
     ? Math.round((project.translatedLines / project.totalLines) * 100)
     : 0;
 
@@ -65,8 +107,9 @@ export function toProjectListItem(project: ProjectInfo): ProjectListItem {
     path: project.path,
     engineDisplayName: project.engine.displayName,
     lastOpened: project.lastOpenedAt,
-    progress,
-    thumbnailPath: project.thumbnailPath,
+    translationProgress,
+    progressState: project.progressState,
+    thumbnailBase64: project.thumbnailBase64,
   };
 }
 

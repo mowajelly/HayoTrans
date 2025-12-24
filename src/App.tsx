@@ -4,18 +4,8 @@ import { I18nProvider, useI18n, isValidLocale, Locale } from './i18n';
 import { getConfig, setLanguage as setBackendLanguage } from './api/config';
 import SplashScreen, { LoadingTask } from './components/SplashScreen';
 import ProjectListPage from './pages/ProjectListPage';
+import ProjectWorkspacePage from './pages/ProjectWorkspacePage';
 import './styles/global.css';
-
-// Placeholder for project detail page (to be implemented later)
-function ProjectPage() {
-  return (
-    <div style={{ padding: '24px' }}>
-      <h1>Project Page</h1>
-      <p>This page will be implemented later.</p>
-      <a href="/">← Back to Projects</a>
-    </div>
-  );
-}
 
 // App content that needs i18n context
 function AppContent() {
@@ -81,7 +71,7 @@ function AppContent() {
     >
       <Router>
         <Route path="/" component={ProjectListPage} />
-        <Route path="/project/:id" component={ProjectPage} />
+        <Route path="/project/:id" component={ProjectWorkspacePage} />
       </Router>
     </Show>
   );

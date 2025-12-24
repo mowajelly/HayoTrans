@@ -58,7 +58,8 @@ impl Database {
                 last_opened_at TEXT NOT NULL,
                 total_lines INTEGER DEFAULT 0,
                 translated_lines INTEGER DEFAULT 0,
-                thumbnail_path TEXT
+                thumbnail_base64 TEXT,
+                progress_state TEXT DEFAULT 'initial'
             );
 
             -- Translation files table
@@ -89,10 +90,45 @@ impl Database {
                 UNIQUE(file_id, unit_id)
             );
 
+            -- Translation cache table (for reusing translations across projects)
+            CREATE TABLE IF NOT EXISTS translation_cache (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id TEXT NOT NULL,
+                original_hash TEXT NOT NULL,
+                original_text TEXT NOT NULL,
+                translated_text TEXT NOT NULL,
+                source_language TEXT DEFAULT 'ja',
+                target_language TEXT DEFAULT 'ko',
+                translator_type TEXT,
+                quality_score REAL DEFAULT 0.0,
+                use_count INTEGER DEFAULT 1,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+                UNIQUE(project_id, original_hash, target_language)
+            );
+
+            -- Project logs table (for tracking actions and errors)
+            CREATE TABLE IF NOT EXISTS project_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                project_id TEXT NOT NULL,
+                log_level TEXT NOT NULL,
+                log_type TEXT NOT NULL,
+                message TEXT NOT NULL,
+                details_json TEXT,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+            );
+
             -- Indexes for better query performance
             CREATE INDEX IF NOT EXISTS idx_translation_files_project ON translation_files(project_id);
             CREATE INDEX IF NOT EXISTS idx_translation_units_file ON translation_units(file_id);
             CREATE INDEX IF NOT EXISTS idx_translation_units_status ON translation_units(status);
+            CREATE INDEX IF NOT EXISTS idx_translation_cache_project ON translation_cache(project_id);
+            CREATE INDEX IF NOT EXISTS idx_translation_cache_hash ON translation_cache(original_hash);
+            CREATE INDEX IF NOT EXISTS idx_project_logs_project ON project_logs(project_id);
+            CREATE INDEX IF NOT EXISTS idx_project_logs_level ON project_logs(log_level);
+            CREATE INDEX IF NOT EXISTS idx_project_logs_type ON project_logs(log_type);
         "#).map_err(|e| format!("Failed to init schema: {}", e))?;
         
         Ok(())

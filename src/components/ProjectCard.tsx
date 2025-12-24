@@ -26,7 +26,7 @@ const ProjectCard: Component<ProjectCardProps> = (props) => {
     <div class="project-card" onClick={handleOpen}>
       <div class="project-card-thumbnail">
         <Show
-          when={props.project.thumbnailPath}
+          when={props.project.thumbnailBase64}
           fallback={
             <div class="project-card-thumbnail-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -37,7 +37,7 @@ const ProjectCard: Component<ProjectCardProps> = (props) => {
             </div>
           }
         >
-          <img src={props.project.thumbnailPath} alt={props.project.name} />
+          <img src={`data:image/png;base64,${props.project.thumbnailBase64}`} alt={props.project.name} />
         </Show>
       </div>
 
@@ -60,11 +60,11 @@ const ProjectCard: Component<ProjectCardProps> = (props) => {
           <div class="project-card-progress-bar">
             <div
               class="project-card-progress-fill"
-              style={{ width: `${props.project.progress}%` }}
+              style={{ width: `${props.project.translationProgress}%` }}
             />
           </div>
           <span class="project-card-progress-text">
-            {props.project.progress}%
+            {props.project.translationProgress}%
           </span>
         </div>
       </div>

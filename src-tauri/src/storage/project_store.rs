@@ -1,7 +1,8 @@
 //! Project store for CRUD operations on projects
 
 use super::Database;
-use crate::types::engine::{GameEngine, RpgMakerVersion, V8Engine, KiriKiriVersion};
+use crate::types::engine::{GameEngine, KiriKiriVersion, RpgMakerVersion, V8Engine};
+use crate::types::progress::ProgressState;
 use chrono::Utc;
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
@@ -68,7 +69,8 @@ pub struct ProjectInfo {
     pub last_opened_at: String,
     pub total_lines: i64,
     pub translated_lines: i64,
-    pub thumbnail_path: Option<String>,
+    pub thumbnail_base64: Option<String>,
+    pub progress_state: ProgressState,
 }
 
 /// Project store for database operations
@@ -86,8 +88,9 @@ impl<'a> ProjectStore<'a> {
     pub fn get_all(&self) -> Result<Vec<ProjectInfo>, String> {
         self.db.with_connection(|conn| {
             let mut stmt = conn.prepare(
-                "SELECT id, name, path, engine_type, engine_version, 
-                        created_at, last_opened_at, total_lines, translated_lines, thumbnail_path
+                "SELECT id, name, path, engine_type, engine_version,
+                        created_at, last_opened_at, total_lines, translated_lines,
+                        thumbnail_base64, progress_state
                  FROM projects
                  ORDER BY last_opened_at DESC"
             )?;
@@ -96,6 +99,7 @@ impl<'a> ProjectStore<'a> {
                 .query_map([], |row| {
                     let engine_type: String = row.get(3)?;
                     let engine_version: Option<String> = row.get(4)?;
+                    let progress_str: String = row.get::<_, Option<String>>(10)?.unwrap_or_else(|| "initial".to_string());
                     
                     Ok(ProjectInfo {
                         id: row.get(0)?,
@@ -110,7 +114,8 @@ impl<'a> ProjectStore<'a> {
                         last_opened_at: row.get(6)?,
                         total_lines: row.get(7)?,
                         translated_lines: row.get(8)?,
-                        thumbnail_path: row.get(9)?,
+                        thumbnail_base64: row.get(9)?,
+                        progress_state: ProgressState::from_db_str(&progress_str),
                     })
                 })?
                 .filter_map(|r| r.ok())
@@ -125,13 +130,15 @@ impl<'a> ProjectStore<'a> {
         self.db.with_connection(|conn| {
             let mut stmt = conn.prepare(
                 "SELECT id, name, path, engine_type, engine_version,
-                        created_at, last_opened_at, total_lines, translated_lines, thumbnail_path
+                        created_at, last_opened_at, total_lines, translated_lines,
+                        thumbnail_base64, progress_state
                  FROM projects WHERE id = ?"
             )?;
 
             let result = stmt.query_row([id], |row| {
                 let engine_type: String = row.get(3)?;
                 let engine_version: Option<String> = row.get(4)?;
+                let progress_str: String = row.get::<_, Option<String>>(10)?.unwrap_or_else(|| "initial".to_string());
                 
                 Ok(ProjectInfo {
                     id: row.get(0)?,
@@ -146,7 +153,8 @@ impl<'a> ProjectStore<'a> {
                     last_opened_at: row.get(6)?,
                     total_lines: row.get(7)?,
                     translated_lines: row.get(8)?,
-                    thumbnail_path: row.get(9)?,
+                    thumbnail_base64: row.get(9)?,
+                    progress_state: ProgressState::from_db_str(&progress_str),
                 })
             });
 
@@ -163,13 +171,15 @@ impl<'a> ProjectStore<'a> {
         self.db.with_connection(|conn| {
             let mut stmt = conn.prepare(
                 "SELECT id, name, path, engine_type, engine_version,
-                        created_at, last_opened_at, total_lines, translated_lines, thumbnail_path
+                        created_at, last_opened_at, total_lines, translated_lines,
+                        thumbnail_base64, progress_state
                  FROM projects WHERE path = ?"
             )?;
 
             let result = stmt.query_row([path], |row| {
                 let engine_type: String = row.get(3)?;
                 let engine_version: Option<String> = row.get(4)?;
+                let progress_str: String = row.get::<_, Option<String>>(10)?.unwrap_or_else(|| "initial".to_string());
                 
                 Ok(ProjectInfo {
                     id: row.get(0)?,
@@ -184,7 +194,8 @@ impl<'a> ProjectStore<'a> {
                     last_opened_at: row.get(6)?,
                     total_lines: row.get(7)?,
                     translated_lines: row.get(8)?,
-                    thumbnail_path: row.get(9)?,
+                    thumbnail_base64: row.get(9)?,
+                    progress_state: ProgressState::from_db_str(&progress_str),
                 })
             });
 
@@ -201,12 +212,13 @@ impl<'a> ProjectStore<'a> {
         let id = Uuid::new_v4().to_string();
         let now = Utc::now().to_rfc3339();
         let engine_info = EngineInfo::from(engine);
+        let initial_state = ProgressState::Initial;
 
         self.db.with_connection(|conn| {
             conn.execute(
-                "INSERT INTO projects (id, name, path, engine_type, engine_version, created_at, last_opened_at)
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-                params![id, name, path, engine_info.engine_type, engine_info.version, now, now],
+                "INSERT INTO projects (id, name, path, engine_type, engine_version, created_at, last_opened_at, progress_state)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+                params![id, name, path, engine_info.engine_type, engine_info.version, now, now, initial_state.as_db_str()],
             )?;
 
             Ok(ProjectInfo {
@@ -218,7 +230,8 @@ impl<'a> ProjectStore<'a> {
                 last_opened_at: now,
                 total_lines: 0,
                 translated_lines: 0,
-                thumbnail_path: None,
+                thumbnail_base64: None,
+                progress_state: initial_state,
             })
         })
     }
@@ -250,6 +263,28 @@ impl<'a> ProjectStore<'a> {
             conn.execute(
                 "UPDATE projects SET total_lines = ?, translated_lines = ? WHERE id = ?",
                 params![total, translated, id],
+            )?;
+            Ok(())
+        })
+    }
+
+    /// Update progress state
+    pub fn update_progress_state(&self, id: &str, state: ProgressState) -> Result<(), String> {
+        self.db.with_connection(|conn| {
+            conn.execute(
+                "UPDATE projects SET progress_state = ? WHERE id = ?",
+                params![state.as_db_str(), id],
+            )?;
+            Ok(())
+        })
+    }
+
+    /// Update thumbnail
+    pub fn update_thumbnail(&self, id: &str, thumbnail_base64: Option<&str>) -> Result<(), String> {
+        self.db.with_connection(|conn| {
+            conn.execute(
+                "UPDATE projects SET thumbnail_base64 = ? WHERE id = ?",
+                params![thumbnail_base64, id],
             )?;
             Ok(())
         })
@@ -310,7 +345,8 @@ mod tests {
                     last_opened_at TEXT NOT NULL,
                     total_lines INTEGER DEFAULT 0,
                     translated_lines INTEGER DEFAULT 0,
-                    thumbnail_path TEXT
+                    thumbnail_base64 TEXT,
+                    progress_state TEXT DEFAULT 'initial'
                 );
             "#)?;
             Ok(())

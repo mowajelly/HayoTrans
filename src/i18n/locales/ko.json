@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "하요트랜스",
+    "title": "HayoTrans",
     "subtitle": "게임 번역 도구"
   },
   "projectList": {
@@ -47,5 +47,39 @@
     "nwjs": "NW.js",
     "electron": "Electron",
     "unknown": "알 수 없음"
+  },
+  "workspace": {
+    "overview": "개요",
+    "projectInfo": "프로젝트 정보",
+    "path": "경로",
+    "engine": "엔진",
+    "totalLines": "전체 줄 수",
+    "translatedLines": "번역된 줄 수",
+    "translationProgress": "번역 진행률",
+    "workflowProgress": "작업 진행 상황",
+    "step1Unpack": "단계 1: 언팩",
+    "step2Extract": "단계 2: 추출",
+    "step3Metadata": "단계 3: 메타데이터",
+    "step4Translate": "단계 4: 번역",
+    "step5Repack": "단계 5: 리팩",
+    "step6Finalize": "단계 6: 완료",
+    "unpackAssets": "자산 언팩",
+    "unpackDescription": "암호화된 게임 아카이브를 추출하여 게임 데이터 파일에 접근합니다.",
+    "startUnpack": "언팩 시작",
+    "extractDialogues": "대사 추출",
+    "extractDescription": "게임 스크립트를 분석하여 번역 가능한 텍스트와 대사를 추출합니다.",
+    "startExtract": "추출 시작",
+    "translateMetadata": "메타데이터 번역",
+    "metadataDescription": "게임 전반에 참조로 나타나는 캐릭터 이름, 용어 및 기타 메타데이터를 번역합니다.",
+    "openMetadataEditor": "메타데이터 편집기 열기",
+    "translateDialogues": "대사 번역",
+    "translateDescription": "추출된 대사와 텍스트 콘텐츠를 번역합니다.",
+    "openTranslationEditor": "번역 편집기 열기",
+    "repackAssets": "자산 리팩",
+    "repackDescription": "번역된 파일을 게임 아카이브 형식으로 다시 패킹합니다.",
+    "startRepack": "리팩 시작",
+    "finalize": "완료",
+    "finalizeDescription": "배포 준비가 완료된 최종 번역 게임 빌드를 생성합니다.",
+    "createFinalBuild": "최종 빌드 생성"
   }
 }

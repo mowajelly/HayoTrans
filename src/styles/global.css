@@ -4,6 +4,14 @@
   --primary-light: #7ab8ff;
   --primary-dark: #3a8eef;
 
+  /* Accent colors (aliases for workspace) */
+  --accent-primary: #4a9eff;
+  --accent-secondary: #7ab8ff;
+  --accent-hover: #3a8eef;
+
+  /* Success color */
+  --color-success: #4caf50;
+
   /* Danger colors */
   --danger-color: #e53935;
   --danger-light: #fee;
@@ -14,6 +22,12 @@
   --header-bg: #ffffff;
   --card-bg: #ffffff;
   --card-hover-bg: #f5f5f5;
+  
+  /* Workspace background colors */
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e8e8e8;
+  --bg-hover: #f0f0f0;
 
   /* Text colors */
   --text-primary: #1a1a1a;
@@ -47,6 +61,12 @@
     --thumbnail-bg: #1a1a1a;
     --progress-bg: #3a3a3a;
     --danger-light: #3a2020;
+
+    /* Workspace background colors (dark) */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #242424;
+    --bg-tertiary: #2a2a2a;
+    --bg-hover: #333333;
   }
 }
 
